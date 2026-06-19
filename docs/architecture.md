@@ -209,3 +209,41 @@ and confidence. When escalation is required, it generates a JSON-ready
 - confidence
 - recommendation
 - timestamp
+
+## Conversation Memory
+
+Conversation memory is implemented with LangGraph checkpointing plus an explicit
+`ConversationMemoryState` domain model. `SupportAgentWorkflow.compile(use_memory=True)`
+attaches a `MemorySaver` checkpointer, and `SupportAgentService` passes the session id as
+LangGraph's `thread_id`. This lets the graph recover prior state across follow-up turns
+without requiring callers to manually resend the full conversation.
+
+The memory layer stores:
+
+- session id
+- completed user-assistant turns
+- retrieved document citations
+- persisted persona
+- per-turn confidence
+- timestamps
+
+Memory is managed by `ConversationMemoryManager` rather than being embedded directly in UI
+code. That keeps the policy for trimming, persona reuse, and state updates testable.
+
+Follow-up support:
+
+- `UserInputNode` restores trimmed session history from memory when no external history is provided.
+- `PersonaDetectionNode` reuses the persisted persona when the latest message has weak evidence.
+- `QueryOptimizationNode` expands short follow-up questions with recent history and recently retrieved documents.
+- `FinalResponseNode` writes the completed turn back into memory.
+
+Token optimization:
+
+- `ConversationMemoryState.trimmed_history()` estimates prompt tokens using a lightweight character heuristic.
+- Recent turns are selected from newest to oldest until the configured token budget is reached.
+- Long-running sessions retain bounded turns and bounded retrieved-document citations.
+
+Configuration:
+
+- `MEMORY_MAX_TURNS`
+- `MEMORY_TOKEN_BUDGET`

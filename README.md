@@ -11,6 +11,7 @@ TODO: Briefly describe the AI support agent, the problem it solves, and the asse
 - TODO: Persona-adaptive response generation
 - TODO: Configurable escalation workflow
 - TODO: Human handoff summary
+- TODO: LangGraph-backed conversation memory
 - TODO: CLI and Streamlit interfaces
 
 ## Tech Stack
@@ -32,6 +33,10 @@ User Query
 ```
 
 TODO: Add architecture diagram and component explanation.
+
+The LangGraph workflow supports session memory through checkpointed graph state. Memory
+tracks conversation turns, retrieved documents, persisted persona, confidence, and trimmed
+history for follow-up questions.
 
 ## Repository Structure
 
