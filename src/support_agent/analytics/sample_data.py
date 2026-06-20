@@ -1,0 +1,98 @@
+"""Sample analytics records for dashboard development and demos."""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime, timedelta
+
+from support_agent.analytics.models import AnalyticsRunRecord
+
+
+def generate_sample_records() -> list[AnalyticsRunRecord]:
+    base_time = datetime(2026, 6, 20, 10, 0, tzinfo=UTC)
+    return [
+        AnalyticsRunRecord(
+            run_id="sample-1",
+            session_id="session-alpha",
+            timestamp=base_time,
+            latency_ms=842.5,
+            confidence_score=0.91,
+            persona="Technical Expert",
+            persona_confidence=0.88,
+            retrieval_scores=[0.82, 0.71, 0.65],
+            retrieved_documents=["api_authentication.md, section Authentication"],
+            escalated=False,
+            conversation_turn_count=1,
+        ),
+        AnalyticsRunRecord(
+            run_id="sample-2",
+            session_id="session-beta",
+            timestamp=base_time + timedelta(minutes=12),
+            latency_ms=1194.2,
+            confidence_score=0.76,
+            persona="Frustrated User",
+            persona_confidence=0.93,
+            retrieval_scores=[0.68, 0.61],
+            retrieved_documents=["password_reset_guide.pdf, page 2"],
+            escalated=False,
+            conversation_turn_count=1,
+        ),
+        AnalyticsRunRecord(
+            run_id="sample-3",
+            session_id="session-gamma",
+            timestamp=base_time + timedelta(minutes=25),
+            latency_ms=1560.8,
+            confidence_score=0.18,
+            persona="Business Executive",
+            persona_confidence=0.74,
+            retrieval_scores=[],
+            retrieved_documents=[],
+            escalated=True,
+            conversation_turn_count=1,
+            context_is_valid=False,
+        ),
+        AnalyticsRunRecord(
+            run_id="sample-4",
+            session_id="session-alpha",
+            timestamp=base_time + timedelta(minutes=40),
+            latency_ms=975.3,
+            confidence_score=0.87,
+            persona="Technical Expert",
+            persona_confidence=0.85,
+            retrieval_scores=[0.79, 0.74, 0.69, 0.62],
+            retrieved_documents=[
+                "api_authentication.md, section Authentication",
+                "webhook_troubleshooting.md, section Retries",
+            ],
+            escalated=False,
+            conversation_turn_count=2,
+        ),
+        AnalyticsRunRecord(
+            run_id="sample-5",
+            session_id="session-delta",
+            timestamp=base_time + timedelta(hours=1, minutes=5),
+            latency_ms=1320.1,
+            confidence_score=0.72,
+            persona="Business Executive",
+            persona_confidence=0.81,
+            retrieval_scores=[0.71, 0.58],
+            retrieved_documents=["sla_policy.md, section Response Times"],
+            escalated=True,
+            conversation_turn_count=1,
+        ),
+        AnalyticsRunRecord(
+            run_id="sample-6",
+            session_id="session-beta",
+            timestamp=base_time + timedelta(hours=1, minutes=20),
+            latency_ms=890.6,
+            confidence_score=0.84,
+            persona="Frustrated User",
+            persona_confidence=0.9,
+            retrieval_scores=[0.75, 0.7, 0.66],
+            retrieved_documents=[
+                "password_reset_guide.pdf, page 2",
+                "account_recovery_faq.md, section Locked Accounts",
+            ],
+            escalated=False,
+            conversation_turn_count=2,
+        ),
+    ]

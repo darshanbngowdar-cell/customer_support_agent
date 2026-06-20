@@ -1,108 +1,157 @@
 # Persona-Adaptive Customer Support Agent
 
-## Project Overview
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-brightgreen)
+![Status](https://img.shields.io/badge/status-early%20preview-yellow)
+[![CI](https://github.com/<owner>/<repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<owner>/<repo>/actions/workflows/ci.yml)
+![Coverage](https://img.shields.io/badge/coverage-unknown-lightgrey)
 
-TODO: Briefly describe the AI support agent, the problem it solves, and the assessment goals.
+## Overview
 
-## Key Features
+`customer_support_agent` is a persona-adaptive support assistant built in Python. It combines hybrid retrieval, persona-aware response generation, configurable escalation, and LangGraph state management to help automated customer support stay grounded and safe.
 
-- TODO: Persona detection
-- TODO: Retrieval-Augmented Generation
-- TODO: Persona-adaptive response generation
-- TODO: Configurable escalation workflow
-- TODO: Human handoff summary
-- TODO: LangGraph-backed conversation memory
-- TODO: CLI and Streamlit interfaces
+## Highlights
 
-## Tech Stack
+- Persona-aware support responses based on user tone and intent
+- Retrieval-augmented generation using dense + BM25 ranking
+- Strict grounding safeguards and escalation rules
+- Human handoff summary for sensitive or low-confidence conversations
+- CLI and Streamlit interfaces for developer evaluation
+- Production-ready configuration, logging, and container deployment
 
-TODO: List Python version, LLM provider, embedding provider, vector database, orchestration framework, UI, testing tools, and deployment tools.
+## Quick start
+
+```bash
+git clone https://github.com/<your-org>/customer_support_agent.git
+cd customer_support_agent
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -e .[dev]
+cp .env.example .env
+```
+
+Run a quick CLI request:
+
+```bash
+python -m support_agent.presentation.cli run --message "How can I reset my password?"
+```
+
+Demo (quick end-to-end)
+
+1. Ingest a tiny demo KB (creates `data/vector_store/demo_store.json`):
+
+```bash
+python examples/demo/ingest_demo.py
+```
+
+2. Run a local demo runner that queries the demo KB and prints a grounded answer:
+
+```bash
+python examples/demo/run_demo.py
+```
+
+3. (Optional) Launch the analytics Streamlit dashboard:
+
+```bash
+python -m support_agent.presentation.streamlit_app
+```
+
+These demo steps require only the dev dependencies and do not call external LLM APIs.
 
 ## Architecture
 
-```text
-User Query
-  -> Interface
-  -> Agent Service
-  -> LangGraph Workflow
-  -> Persona Detection
-  -> Knowledge Retrieval
-  -> Grounded Response Generation
-  -> Escalation Check
-  -> Human Handoff Summary
+This project is structured around a modular support workflow:
+
+```mermaid
+graph TB
+    A[User Input] --> B[Persona Detection]
+    B --> C[Query Optimization]
+    C --> D[Hybrid Retrieval]
+    D --> E[Context Validation]
+    E --> F[Response Generation]
+    F --> G[Confidence Evaluation]
+    G --> H[Escalation Decision]
+    H --> I[Human Handoff / Final Response]
+    I --> J[Conversation Memory]
 ```
 
-TODO: Add architecture diagram and component explanation.
+For a deeper breakdown, see `docs/architecture.md`.
 
-The LangGraph workflow supports session memory through checkpointed graph state. Memory
-tracks conversation turns, retrieved documents, persisted persona, confidence, and trimmed
-history for follow-up questions.
+## Repository structure
 
-## Repository Structure
+- `src/support_agent` — core application package
+- `src/support_agent/application` — service orchestration, persona detection, response generation, ingestion, retrieval
+- `src/support_agent/infrastructure` — adapters for LLMs, embeddings, loaders, retrievers, telemetry
+- `src/support_agent/domain` — request, response, persona, memory, escalation models
+- `src/support_agent/presentation` — CLI and Streamlit app
+- `src/support_agent/prompts` — prompt templates for persona detection, handoff, and responses
+- `tests` — unit and integration coverage
+- `docs` — architecture, deployment, examples, and limitations
 
-TODO: Explain the major folders and modules.
+## Key concepts
 
-## Persona Detection Strategy
+### Persona detection
 
-TODO: Explain classification method, prompt design, confidence scoring, and fallback behavior.
+The agent classifies the customer persona from recent conversation context and applies a tone-specific response policy. If persona evidence is weak, the system falls back to safer support styles.
 
-## RAG Pipeline Design
+### Hybrid retrieval
 
-TODO: Explain document loading, chunking, embeddings, vector storage, metadata, and retrieval strategy.
+Content is indexed from raw documents and retrieved with both dense embeddings and BM25 lexical search. The results are fused using Reciprocal Rank Fusion to maximize grounding quality.
 
-Current retrieval subsystem:
+### Grounded response generation
 
-- Loads PDF, Markdown, TXT, and DOCX files.
-- Preserves source metadata, page numbers, section names, chunk indices, and file type.
-- Uses LangChain `RecursiveCharacterTextSplitter` with dynamic chunk sizing.
-- Creates deterministic chunk IDs and content hashes.
-- Prevents duplicate chunks before indexing and when writing to ChromaDB.
-- Embeds chunks with Sentence Transformers.
-- Stores vectors and metadata in ChromaDB.
-- Runs dense retrieval and BM25 retrieval independently.
-- Combines rankings with Reciprocal Rank Fusion.
-- Returns retrieval scores, source score breakdowns, and citations.
+Responses are generated with persona-specific prompts and are conditioned on retrieved context. If context is insufficient or confidence falls below threshold, the system triggers escalation instead of answering.
 
-## Escalation Logic
+### Escalation and handoff
 
-TODO: Explain escalation triggers, configurable thresholds, and human handoff behavior.
+Escalation is driven by configurable rules for low confidence, unsupported content, billing or legal issues, repeated dissatisfaction, and explicit user requests.
 
-## Setup Instructions
+## Documentation
 
-TODO: Add local setup steps.
+- `docs/installation.md` — local setup and development
+- `docs/deployment.md` — Docker and production deployment
+- `docs/architecture.md` — system design and component boundaries
+- `docs/sequence_diagram.md` — sequence of request handling
+- `docs/workflow_diagram.md` — workflow graph overview
+- `docs/example_conversations.md` — sample queries and answers
+- `docs/known_limitations.md` — current project limitations
+- `docs/future_improvements.md` — roadmap and improvements
 
-## Environment Variables
+## Environment variables
 
-TODO: Document required and optional environment variables.
+Use `.env.example` as a starting point. Key settings include:
 
-## Running the Application
-
-TODO: Add CLI and Streamlit commands.
-
-## Knowledge Base
-
-TODO: Describe the support documents under `data/raw`.
-
-## Example Queries
-
-TODO: Provide at least five example queries covering all personas and escalation.
-
-## Evaluation
-
-TODO: Explain persona, retrieval, and workflow evaluation scripts.
+- `OPENAI_API_KEY`
+- `SUPPORT_AGENT_DEFAULT_PERSONA`
+- `SUPPORT_AGENT_RETRIEVAL_CONFIDENCE_THRESHOLD`
+- `SUPPORT_AGENT_CACHE_TTL_SECONDS`
+- `SUPPORT_AGENT_MAX_REQUESTS_PER_MINUTE`
+- `SUPPORT_AGENT_LOG_LEVEL`
 
 ## Testing
 
-TODO: Add test commands and coverage expectations.
+Run the test suite with:
 
-## Docker
+```bash
+pytest -q
+```
 
-TODO: Explain Docker and Docker Compose usage.
+CI: a GitHub Actions workflow `CI` runs linting, type checks and tests on pushes and PRs. Replace the badge owner/repo placeholders above with your GitHub org and repository name to enable the badge.
 
-## Known Limitations
+## Formatting and linting
 
-TODO: Document current limitations and future improvements.
+This project supports `pre-commit` for quality checks. Install and run:
 
-## Demo Recording Guide
+```bash
+pre-commit install
+pre-commit run --all-files
+```
 
-TODO: Link to the demo script and recording checklist.
+## Contributing
+
+See `CONTRIBUTING.md` for local development, branching, and pull request guidance.
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE`.

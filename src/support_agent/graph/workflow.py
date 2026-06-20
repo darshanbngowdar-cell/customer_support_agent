@@ -55,7 +55,10 @@ class SupportAgentWorkflow:
             HybridRetrievalNode(self._dependencies.retrieval_service),
             retry=retry_policy,
         )
-        graph.add_node(CONTEXT_VALIDATION, ContextValidationNode())
+        graph.add_node(
+            CONTEXT_VALIDATION,
+            ContextValidationNode(self._dependencies.context_validation_threshold),
+        )
         graph.add_node(
             RESPONSE_GENERATION,
             ResponseGenerationNode(self._dependencies.response_generator),

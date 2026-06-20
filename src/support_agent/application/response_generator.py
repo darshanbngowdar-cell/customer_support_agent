@@ -3,6 +3,7 @@ from support_agent.domain.personas import PersonaDetectionResult
 from support_agent.domain.responses import GeneratedSupportResponse
 from support_agent.infrastructure.llm.base import LLMClient
 from support_agent.prompts.response_prompts import build_response_generation_prompt
+from support_agent.utils.cache import TimedLRUCache
 
 
 class ResponseGenerator:
@@ -12,9 +13,17 @@ class ResponseGenerator:
         self,
         llm_client: LLMClient,
         minimum_retrieval_confidence: float = 0.35,
+        cache_enabled: bool = True,
+        cache_ttl_seconds: int = 300,
+        cache_max_items: int = 256,
     ) -> None:
         self._llm_client = llm_client
         self._minimum_retrieval_confidence = minimum_retrieval_confidence
+        self._cache = (
+            TimedLRUCache(maxsize=cache_max_items, ttl_seconds=cache_ttl_seconds)
+            if cache_enabled
+            else None
+        )
 
     def generate(
         self,
@@ -45,10 +54,16 @@ class ResponseGenerator:
             persona=persona_result.persona,
             chunks=usable_chunks,
         )
+        cache_key = self._cache_key(question, persona_result.persona, usable_chunks)
+        if self._cache is not None:
+            cached_response = self._cache.get(cache_key)
+            if cached_response is not None:
+                return cached_response
+
         answer = self._llm_client.generate(system_prompt=system_prompt, user_prompt=user_prompt)
         answer = self._ensure_citations(answer, usable_chunks)
 
-        return GeneratedSupportResponse(
+        response = GeneratedSupportResponse(
             answer=answer,
             persona=persona_result.persona,
             confidence=final_confidence,
@@ -57,6 +72,17 @@ class ResponseGenerator:
             used_context=True,
             requires_escalation=False,
         )
+
+        if self._cache is not None:
+            self._cache.set(cache_key, response)
+
+        return response
+
+    def _cache_key(self, question: str, persona: object, chunks: list[RetrievedChunk]) -> str:
+        citation_digest = ";".join(
+            f"{chunk.citation}:{chunk.score:.4f}" for chunk in chunks
+        )
+        return f"{question}|{persona}|{citation_digest}"
 
     def _insufficient_context_response(
         self,

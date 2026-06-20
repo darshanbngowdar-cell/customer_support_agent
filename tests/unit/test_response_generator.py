@@ -103,3 +103,27 @@ def test_duplicate_chunks_are_not_sent_to_llm() -> None:
 
     assert len(result.retrieved_chunks) == 1
     assert len(llm.calls) == 1
+
+
+def test_response_generator_caches_identical_prompts() -> None:
+    llm = MockLLMClient("Cache answer.")
+    generator = ResponseGenerator(
+        llm_client=llm,
+        cache_enabled=True,
+        cache_ttl_seconds=60,
+        cache_max_items=10,
+    )
+
+    result1 = generator.generate(
+        question="How do I reset my password?",
+        persona_result=_persona(PersonaType.FRUSTRATED_USER),
+        retrieval_result=HybridRetrievalResult(results=[_retrieved()]),
+    )
+    result2 = generator.generate(
+        question="How do I reset my password?",
+        persona_result=_persona(PersonaType.FRUSTRATED_USER),
+        retrieval_result=HybridRetrievalResult(results=[_retrieved()]),
+    )
+
+    assert result1.answer == result2.answer
+    assert len(llm.calls) == 1

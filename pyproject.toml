@@ -27,6 +27,7 @@ dependencies = [
   "pypdf>=5.6.0,<6.0.0",
   "python-docx>=1.1.2,<2.0.0",
   "streamlit>=1.45.0,<2.0.0",
+  "plotly>=6.1.0,<7.0.0",
   "typer>=0.16.0,<1.0.0",
   "rich>=14.0.0,<15.0.0",
   "structlog>=25.4.0,<26.0.0"
@@ -37,7 +38,11 @@ dev = [
   "pytest>=8.4.0,<9.0.0",
   "pytest-cov>=6.2.0,<7.0.0",
   "ruff>=0.11.13,<1.0.0",
-  "mypy>=1.16.0,<2.0.0"
+  "mypy>=1.16.0,<2.0.0",
+  "black>=24.10.0,<25.0.0",
+  "isort>=5.14.0,<6.0.0",
+  "flake8>=7.0.0,<8.0.0",
+  "pre-commit>=4.0.0,<5.0.0"
 ]
 
 [project.scripts]
@@ -62,6 +67,25 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 no_implicit_optional = true
 
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+known_first_party = ["support_agent"]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [".git", "__pycache__", "build", "dist", "*.egg-info", ".venv", ".venv/*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q --cov=src/support_agent --cov-report=term-missing"
+# Add a -W ignore for the LangChain pending deprecation class so pytest starts
+# with the appropriate warnings filter.
+addopts = "-q -W ignore::langchain_core._api.deprecation.LangChainPendingDeprecationWarning"
+filterwarnings = [
+  "ignore:The default value of `allowed_objects` will change",
+]

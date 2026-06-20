@@ -11,3 +11,6 @@ class MockLLMClient(LLMClient):
     def generate(self, system_prompt: str, user_prompt: str) -> str:
         self.calls.append((system_prompt, user_prompt))
         return self.response
+
+    def ping(self) -> bool:
+        return True

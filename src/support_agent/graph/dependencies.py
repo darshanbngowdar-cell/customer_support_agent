@@ -23,4 +23,5 @@ class SupportGraphDependencies:
     response_generator: ResponseGenerator
     escalation_engine: EscalationEngine = field(default_factory=EscalationEngine)
     memory_manager: ConversationMemoryManager = field(default_factory=ConversationMemoryManager)
+    context_validation_threshold: float = 0.35
     retry_config: GraphRetryConfig = field(default_factory=GraphRetryConfig)
