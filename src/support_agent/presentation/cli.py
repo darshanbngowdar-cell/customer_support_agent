@@ -33,8 +33,7 @@ def _create_llm_client(settings):
             api_key=settings.openai_api_key.get_secret_value(),
             model=settings.openai_model,
             timeout=settings.openai_request_timeout,
-            temperature=settings.openai_temperature,
-            max_tokens=settings.openai_max_tokens,
+            temperature=settings.openai_temperature,            top_p=settings.openai_top_p,            max_tokens=settings.openai_max_tokens,
             api_base=settings.openai_api_base,
         )
 

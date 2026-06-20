@@ -1,10 +1,12 @@
 # Persona-Adaptive Customer Support Agent
 
-![Python](https://img.shields.io/badge/python-3.11%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-brightgreen)
-![Status](https://img.shields.io/badge/status-early%20preview-yellow)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
+[![Status](https://img.shields.io/badge/status-production-ready-brightgreen)]
 [![CI](https://github.com/<owner>/<repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<owner>/<repo>/actions/workflows/ci.yml)
-![Coverage](https://img.shields.io/badge/coverage-unknown-lightgrey)
+[![Coverage](https://img.shields.io/badge/coverage-unknown-lightgrey)](https://github.com/<owner>/<repo>/actions/workflows/ci.yml)
+
+![Project screenshot placeholder](docs/screenshots/placeholder.png)
 
 ## Overview
 
@@ -58,6 +60,19 @@ python -m support_agent.presentation.streamlit_app
 ```
 
 These demo steps require only the dev dependencies and do not call external LLM APIs.
+
+## Project Showcase
+
+See `PROJECT_SHOWCASE.md` for a concise presentation designed for technical interviews and architecture reviews. It explains the problem, architecture, RAG pipeline, LangGraph usage, persona detection, escalation, and interview talking points.
+
+## Interview talking points (quick)
+
+- Clean Architecture: domain, application, infrastructure, presentation separation.
+- RAG pipeline: dense + BM25 + RRF fusion.
+- Safety: prompt engineering for grounded answers and escalation policies.
+- Observability: structlog, DI container, and planned Prometheus metrics.
+- Deployment: Docker + compose; recommendations for production (managed vector DB, autoscaling).
+
 
 ## Architecture
 

@@ -1,5 +1,15 @@
 # Architecture
 
+This document provides an overview of the system architecture. See `README.md` for the high-level mermaid diagram. The system is organized using a Clean Architecture approach:
+
+- `src/support_agent/domain` — core domain models (personas, documents, responses, escalation)
+- `src/support_agent/application` — orchestration and use-cases (persona detection, retrieval orchestration, response generation)
+- `src/support_agent/infrastructure` — adapters and gateways (LLM client, vector store, loaders, retrievers)
+- `src/support_agent/presentation` — CLI and Streamlit UI
+
+For sequence and workflow diagrams, see `sequence_diagram.md` and `workflow_diagram.md`.
+# Architecture
+
 This project is designed as a production-ready customer support agent that combines persona-aware reasoning with retrieval-augmented generation and escalation management.
 
 ## System overview

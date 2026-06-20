@@ -1,5 +1,26 @@
 ## Summary
 
+Describe the change and why it is needed.
+
+## Related issues
+
+- Closes: #
+
+## Changes
+
+- Bullet list of changes
+
+## Checklist
+- [ ] Tests added/updated
+- [ ] Linting passed (`ruff`, `black`, `isort`)
+- [ ] Type checks passed (`mypy`)
+- [ ] Documentation updated if needed
+
+## Commit message guidance
+
+Follow Conventional Commits. Example: `feat(retrieval): add reciprocal-rank-fusion for hybrid retriever`.
+## Summary
+
 Describe the change and why it was made.
 
 ## Type of change

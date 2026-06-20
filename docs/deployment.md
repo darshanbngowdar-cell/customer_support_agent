@@ -1,5 +1,14 @@
 # Deployment
 
+This repository ships with a `Dockerfile` and `docker-compose.yml` for local and production deployment. For Streamlit Cloud compatibility, ensure the `streamlit` service is started with the `streamlit run` command and the `PORT` env var is configured by the platform.
+
+See `Dockerfile` and `docker-compose.yml` for example deployments. The recommended production flow is:
+
+1. Build multi-stage Docker image.
+2. Push image to container registry.
+3. Deploy to Kubernetes or a container service with secrets injected via platform-managed secrets.
+# Deployment
+
 ## Docker Compose
 
 This repository includes a production-ready `Dockerfile` and `docker-compose.yml`.

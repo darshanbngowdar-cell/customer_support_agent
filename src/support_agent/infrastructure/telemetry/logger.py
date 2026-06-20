@@ -1,38 +1,16 @@
-from __future__ import annotations
-
-import logging
-import sys
-
-import structlog
-from support_agent.config.settings import Settings
+from support_agent.logging.config import configure_logging as _configure_logging
+from support_agent.logging.config import get_logger as _get_logger
 
 
-def configure_logging(settings: Settings) -> None:
-    log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
+def configure_logging(settings: object | None = None) -> None:
+    """Compatibility wrapper used by CLI and other modules.
 
-    processors = [
-        structlog.stdlib.add_log_level,
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.TimeStamper(fmt="iso"),
-    ]
-
-    if settings.log_format == "text":
-        processors.append(structlog.dev.ConsoleRenderer(colors=False))
-    else:
-        processors.append(structlog.processors.JSONRenderer())
-
-    structlog.configure(
-        processors=processors,
-        wrapper_class=structlog.make_filtering_bound_logger(log_level),
-        logger_factory=structlog.stdlib.LoggerFactory(),
-        cache_logger_on_first_use=True,
-    )
-
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(log_level)
-    logging.basicConfig(handlers=[handler], level=log_level, format="%(message)s")
+    Accepts an optional settings object for backwards compatibility but uses
+    the centralized logging configuration under `support_agent.logging.config`.
+    """
+    _configure_logging()
 
 
-log = structlog.get_logger()
+# Expose a module-level `log` to match previous imports elsewhere in the codebase
+log = _get_logger("support_agent")
 

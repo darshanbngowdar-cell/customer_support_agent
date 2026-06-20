@@ -1,3 +1,21 @@
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant UI as Streamlit/CLI
+    participant A as Agent Service
+    participant R as Retriever
+    participant L as LLM
+    participant H as Handoff
+
+    U->>UI: Submit question
+    UI->>A: normalize + validate
+    A->>R: hybrid retrieval
+    R-->>A: documents
+    A->>L: generate grounded response
+    L-->>A: response
+    A->>H: decide escalation / handoff
+    A-->>UI: final response
+```
 # Sequence Diagram
 
 ```mermaid

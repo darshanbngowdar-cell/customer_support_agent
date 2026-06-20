@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  support-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: persona-support-agent:latest
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data:ro
+    command: support-agent
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

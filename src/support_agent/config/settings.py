@@ -43,11 +43,23 @@ class Settings(BaseSettings):
         le=2.0,
         description="Temperature for OpenAI generation.",
     )
+    openai_top_p: float = Field(
+        default=1.0,
+        ge=0.0,
+        le=1.0,
+        description="Top-p sampling value for OpenAI generation.",
+    )
     openai_max_tokens: int = Field(
         default=512,
         ge=1,
         le=2048,
         description="Maximum tokens for OpenAI generation.",
+    )
+    persona_minimum_confidence: float = Field(
+        default=0.35,
+        ge=0.0,
+        le=1.0,
+        description="Minimum confidence required to classify a persona without fallback.",
     )
 
     data_dir: Path = Field(

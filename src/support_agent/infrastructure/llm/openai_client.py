@@ -13,6 +13,7 @@ class OpenAIClient(LLMClient):
         model: str = "gpt-3.5-turbo",
         timeout: int = 30,
         temperature: float = 0.0,
+        top_p: float = 1.0,
         max_tokens: int = 512,
         api_base: str | None = None,
     ) -> None:
@@ -35,6 +36,7 @@ class OpenAIClient(LLMClient):
         self._model = model
         self._timeout = timeout
         self._temperature = temperature
+        self._top_p = top_p
         self._max_tokens = max_tokens
 
     def generate(self, system_prompt: str, user_prompt: str) -> str:
@@ -46,6 +48,7 @@ class OpenAIClient(LLMClient):
                     {"role": "user", "content": user_prompt},
                 ],
                 temperature=self._temperature,
+                top_p=self._top_p,
                 max_tokens=self._max_tokens,
                 timeout=self._timeout,
             )
